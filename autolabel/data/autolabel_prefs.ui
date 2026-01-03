@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.0" />
+
+  <!-- ListStore for rules -->
+  <object class="GtkListStore" id="rules_liststore">
+    <columns>
+      <column type="gboolean" />
+      <column type="gchararray" />
+      <column type="gchararray" />
+    </columns>
+  </object>
+
+  <!-- Main preferences box -->
+  <object class="GtkBox" id="autolabel_prefs_box">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="orientation">vertical</property>
+    <property name="spacing">12</property>
+    <property name="margin_start">12</property>
+    <property name="margin_end">12</property>
+    <property name="margin_top">12</property>
+    <property name="margin_bottom">12</property>
+
+    <!-- Settings Frame -->
+    <child>
+      <object class="GtkFrame" id="settings_frame">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label_xalign">0</property>
+        <child>
+          <object class="GtkBox" id="settings_box">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">6</property>
+            <property name="margin_start">12</property>
+            <property name="margin_end">12</property>
+            <property name="margin_top">6</property>
+            <property name="margin_bottom">6</property>
+
+            <!-- Apply on add checkbox -->
+            <child>
+              <object class="GtkCheckButton" id="apply_on_add_checkbox">
+                <property name="label" translatable="yes">Automatically apply rules when torrents
+                  are added</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+              </object>
+            </child>
+
+            <!-- Skip if labeled checkbox -->
+            <child>
+              <object class="GtkCheckButton" id="skip_if_labeled_checkbox">
+                <property name="label" translatable="yes">Skip torrents that already have a label</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+              </object>
+            </child>
+
+            <!-- Case insensitive checkbox -->
+            <child>
+              <object class="GtkCheckButton" id="case_insensitive_checkbox">
+                <property name="label" translatable="yes">Case-insensitive pattern matching</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="label">
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">&lt;b&gt;General Settings&lt;/b&gt;</property>
+            <property name="use_markup">True</property>
+          </object>
+        </child>
+      </object>
+    </child>
+
+    <!-- Rules Frame -->
+    <child>
+      <object class="GtkFrame" id="rules_frame">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label_xalign">0</property>
+        <property name="vexpand">True</property>
+        <child>
+          <object class="GtkBox" id="rules_box">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">6</property>
+            <property name="margin_start">12</property>
+            <property name="margin_end">12</property>
+            <property name="margin_top">6</property>
+            <property name="margin_bottom">6</property>
+
+            <!-- Rules TreeView with ScrolledWindow -->
+            <child>
+              <object class="GtkScrolledWindow" id="rules_scrolledwindow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="vexpand">True</property>
+                <property name="min_content_height">150</property>
+                <property name="shadow_type">in</property>
+                <child>
+                  <object class="GtkTreeView" id="rules_treeview">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="model">rules_liststore</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection" />
+                    </child>
+                    <!-- Enabled column -->
+                    <child>
+                      <object class="GtkTreeViewColumn" id="enabled_column">
+                        <property name="title" translatable="yes">Enabled</property>
+                        <property name="resizable">True</property>
+                        <child>
+                          <object class="GtkCellRendererToggle" id="enabled_renderer" />
+                          <attributes>
+                            <attribute name="active">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <!-- Label column -->
+                    <child>
+                      <object class="GtkTreeViewColumn" id="label_column">
+                        <property name="title" translatable="yes">Label</property>
+                        <property name="resizable">True</property>
+                        <property name="min_width">100</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="label_renderer" />
+                          <attributes>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <!-- Pattern column -->
+                    <child>
+                      <object class="GtkTreeViewColumn" id="pattern_column">
+                        <property name="title" translatable="yes">Regex Pattern</property>
+                        <property name="resizable">True</property>
+                        <property name="expand">True</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="pattern_renderer" />
+                          <attributes>
+                            <attribute name="text">2</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+
+            <!-- Add/Edit rule section -->
+            <child>
+              <object class="GtkBox" id="add_rule_box">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="orientation">horizontal</property>
+                <property name="spacing">6</property>
+
+                <!-- Enabled checkbox -->
+                <child>
+                  <object class="GtkCheckButton" id="enabled_checkbox">
+                    <property name="label" translatable="yes">Enabled</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                  </object>
+                </child>
+
+                <!-- Label entry -->
+                <child>
+                  <object class="GtkEntry" id="label_entry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="placeholder_text" translatable="yes">Label name</property>
+                    <property name="width_chars">15</property>
+                  </object>
+                </child>
+
+                <!-- Pattern entry -->
+                <child>
+                  <object class="GtkEntry" id="pattern_entry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hexpand">True</property>
+                    <property name="placeholder_text" translatable="yes">Regex pattern (e.g.,
+                      .*movies.*)</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+
+            <!-- Pattern error label -->
+            <child>
+              <object class="GtkLabel" id="pattern_error_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="label"></property>
+                <style>
+                  <class name="error" />
+                </style>
+                <attributes>
+                  <attribute name="foreground" value="#cc0000" />
+                </attributes>
+              </object>
+            </child>
+
+            <!-- Buttons box -->
+            <child>
+              <object class="GtkButtonBox" id="buttons_box">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="layout_style">end</property>
+                <property name="spacing">6</property>
+
+                <child>
+                  <object class="GtkButton" id="add_rule_button">
+                    <property name="label" translatable="yes">Add Rule</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkButton" id="edit_rule_button">
+                    <property name="label" translatable="yes">Edit Selected</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkButton" id="remove_rule_button">
+                    <property name="label" translatable="yes">Remove Selected</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkButton" id="apply_rules_button">
+                    <property name="label" translatable="yes">Apply Rules to All Torrents</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="tooltip_text" translatable="yes">Apply all enabled rules to
+                      existing torrents</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="label">
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">&lt;b&gt;Label Rules&lt;/b&gt;</property>
+            <property name="use_markup">True</property>
+          </object>
+        </child>
+      </object>
+    </child>
+
+    <!-- Help section -->
+    <child>
+      <object class="GtkFrame" id="help_frame">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label_xalign">0</property>
+        <child>
+          <object class="GtkLabel" id="help_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="margin_start">12</property>
+            <property name="margin_end">12</property>
+            <property name="margin_top">6</property>
+            <property name="margin_bottom">6</property>
+            <property name="label" translatable="yes">Regex patterns are matched against torrent
+              names. Examples:
+              • .*movie.* - Matches any torrent with "movie" in the name
+              • ^Ubuntu.* - Matches torrents starting with "Ubuntu"
+              • .*\\.S[0-9]+E[0-9]+.* - Matches TV show episode patterns (e.g., S01E02)</property>
+            <property name="wrap">True</property>
+            <property name="selectable">True</property>
+          </object>
+        </child>
+        <child type="label">
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">&lt;b&gt;Pattern Help&lt;/b&gt;</property>
+            <property name="use_markup">True</property>
+          </object>
+        </child>
+      </object>
+    </child>
+
+  </object>
+</interface>
