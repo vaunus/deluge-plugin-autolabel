@@ -8,6 +8,10 @@ AutoLabel is a plugin for [Deluge](https://deluge-torrent.org/) that automatical
 - 🔍 **Regex Pattern Matching**: Use regular expressions to match torrent names
 - ⚙️ **Flexible Configuration**: Configure multiple rules with different patterns and labels
 
+## Screenshot
+
+![Plugin screenshot](./screenshot.png)
+
 ## Requirements
 
 - Deluge 2.x
