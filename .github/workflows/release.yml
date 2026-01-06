@@ -8,67 +8,67 @@ jobs:
   build-and-publish:
     name: Build and publish plugin eggs
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
-        python-version: ['3.8', '3.14']
+        python-version: ["3.8", "3.14"]
       fail-fast: false
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install setuptools wheel
-      
+
       - name: Extract version from setup.py
         id: get_version
         run: |
-          VERSION=$(python -c "exec(open('setup.py').read()); print(__version__)")
+          VERSION=$(python -c "import re; content = open('setup.py').read(); match = re.search(r\"__version__\s*=\s*['\\\"]([^'\\\"]+)['\\\"]\" , content); print(match.group(1) if match else '')")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Extracted version: $VERSION"
-      
+
       - name: Verify release tag matches version
         run: |
           SETUP_VERSION="${{ steps.get_version.outputs.version }}"
           RELEASE_TAG="${{ github.event.release.tag_name }}"
           # Remove 'v' prefix if present in tag
           RELEASE_VERSION="${RELEASE_TAG#v}"
-          
+
           echo "Setup.py version: $SETUP_VERSION"
           echo "Release tag: $RELEASE_TAG"
           echo "Release version (normalized): $RELEASE_VERSION"
-          
+
           if [ "$SETUP_VERSION" != "$RELEASE_VERSION" ]; then
             echo "::error::Version mismatch! setup.py has version $SETUP_VERSION but release tag is $RELEASE_TAG"
             exit 1
           fi
           echo "✓ Version verification passed"
-      
+
       - name: Build egg for Python ${{ matrix.python-version }}
         id: build
         run: |
           echo "Building egg for Python ${{ matrix.python-version }}..."
           python setup.py bdist_egg
-          
+
           # Find the generated egg file
           EGG_FILE=$(ls dist/*.egg | head -n 1)
           if [ -z "$EGG_FILE" ]; then
             echo "::error::No egg file was generated"
             exit 1
           fi
-          
+
           echo "egg_file=$EGG_FILE" >> $GITHUB_OUTPUT
           echo "egg_name=$(basename $EGG_FILE)" >> $GITHUB_OUTPUT
           echo "✓ Successfully built: $(basename $EGG_FILE)"
-      
+
       - name: Upload egg to release
         uses: actions/upload-release-asset@v1
         env:
@@ -78,7 +78,7 @@ jobs:
           asset_path: ${{ steps.build.outputs.egg_file }}
           asset_name: ${{ steps.build.outputs.egg_name }}
           asset_content_type: application/octet-stream
-      
+
       - name: Build summary
         if: always()
         run: |
@@ -87,13 +87,13 @@ jobs:
           else
             echo "❌ Python ${{ matrix.python-version }}: Build failed" >> $GITHUB_STEP_SUMMARY
           fi
-  
+
   build-summary:
     name: Build Summary
     runs-on: ubuntu-latest
     needs: build-and-publish
     if: always()
-    
+
     steps:
       - name: Check build results
         run: |
@@ -102,10 +102,9 @@ jobs:
           echo "Release: ${{ github.event.release.tag_name }}" >> $GITHUB_STEP_SUMMARY
           echo "Release URL: ${{ github.event.release.html_url }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ needs.build-and-publish.result }}" == "success" ]; then
             echo "✅ All builds completed successfully!" >> $GITHUB_STEP_SUMMARY
           else
             echo "⚠️ Some builds may have failed. Check individual job results above." >> $GITHUB_STEP_SUMMARY
           fi
-
