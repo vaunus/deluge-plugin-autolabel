@@ -12,7 +12,7 @@ from setuptools import find_packages, setup
 __plugin_name__ = 'AutoLabel'
 __author__ = 'Vaughan Reid'
 __author_email__ = 'vaunus@gmail.com'
-__version__ = '1.0'
+__version__ = '1.0.1'
 __url__ = 'https://github.com/vaunus/deluge-plugin-autolabel'
 __license__ = 'GPLv3'
 __description__ = 'Automatically assign labels to torrents based on regex pattern matching'

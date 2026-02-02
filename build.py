@@ -11,7 +11,7 @@ import sys
 from shutil import which
 
 # Python versions to try building for
-PYTHON_VERSIONS = ['3.8', '3.14']
+PYTHON_VERSIONS = ['3.8', '3.10', '3.14']
 
 
 def find_python_executables():
