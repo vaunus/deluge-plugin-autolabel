@@ -20,6 +20,7 @@ import deluge.component as component
 import deluge.configmanager
 from deluge.core.rpcserver import export
 from deluge.plugins.pluginbase import CorePluginBase
+from twisted.internet import reactor
 
 log = logging.getLogger(__name__)
 
@@ -169,12 +170,19 @@ class Core(CorePluginBase):
         if not self.config['apply_on_add']:
             return
 
-        self._apply_rules_to_torrent(torrent_id)
+        self._apply_rules_to_torrent(torrent_id, retries=5)
 
-    def _apply_rules_to_torrent(self, torrent_id):
+    def _apply_rules_to_torrent(self, torrent_id, retries=0):
         """Apply all enabled rules to a single torrent."""
         torrent_name = self._get_torrent_name(torrent_id)
         if not torrent_name:
+            if retries > 0:
+                log.debug(
+                    f'AutoLabel: Torrent {torrent_id} has no name yet, '
+                    f'retrying in 2s ({retries} retries left)')
+                reactor.callLater(
+                    2, self._apply_rules_to_torrent, torrent_id, retries - 1)
+                return False
             log.warning(
                 f'AutoLabel: Could not get name for torrent {torrent_id}')
             return False
